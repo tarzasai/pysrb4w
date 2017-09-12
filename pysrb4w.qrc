@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="16">
+    <file>res/16/font-dec.png</file>
+    <file>res/16/font-inc.png</file>
+    <file>res/16/saved.png</file>
+    <file>res/16/browse.png</file>
+    <file>res/16/refresh.png</file>
+    <file>res/16/vote-dn.png</file>
+    <file>res/16/vote-up.png</file>
+  </qresource>
+</RCC>
