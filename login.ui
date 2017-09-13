@@ -22,6 +22,9 @@
   <property name="windowTitle">
    <string>SRB4W</string>
   </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <layout class="QFormLayout" name="formLayout">
    <property name="fieldGrowthPolicy">
     <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
