@@ -108,11 +108,11 @@ class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
                 self.reddit.subreddit(sub).new(limit=STD_LIMIT)
             if self.cmbSubs.findText(sub) < 0:
                 self.cmbSubs.addItem(sub)
-            QtGui.QApplication.restoreOverrideCursor()
         except Exception as err:
             log.error(err)
-            QtGui.QApplication.restoreOverrideCursor()
             QtGui.QMessageBox.critical(self, 'Subreddit error', err.__str__())
+        finally:
+            QtGui.QApplication.restoreOverrideCursor()
 
     def onLoadClick(self):
         if self.cmbSubs.currentText() == '':
@@ -125,6 +125,8 @@ class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
             self.setWindowTitle('SRB4W [%s]' % self.reddit.user.me())
         if self.subreddit is None:
             self.getsub()
+        if self.subreddit is None:
+            return
         self.lastPost = None
         try:
             self.lastPost = self.subreddit.next()
@@ -135,17 +137,18 @@ class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
                 self.lastPost = self.subreddit.next()
             except StopIteration:
                 QtGui.QMessageBox.critical(self, 'Subreddit empty?', 'Looks like there are no (more) submissions here.')
+                return
             except Exception as err:
                 log.error(err)
                 QtGui.QMessageBox.critical(self, 'Subreddit error', err.__str__())
-        if self.lastPost is not None:
-            self.btnVoteUp.setChecked(self.lastPost.likes is True)
-            self.btnVoteUp.setEnabled(not (self.lastPost.locked or self.lastPost.archived))
-            self.btnVoteDn.setChecked(self.lastPost.likes is False)
-            self.btnVoteDn.setEnabled(not (self.lastPost.locked or self.lastPost.archived))
-            self.btnSaved.setChecked(self.lastPost.saved)
-            self.txtBody.setHtml('<p><b>%s</b></p>%s' % (self.lastPost.title, self.lastPost.selftext_html))
-            self.txtBody.setFocus()
+                return
+        self.btnVoteUp.setChecked(self.lastPost.likes is True)
+        self.btnVoteUp.setEnabled(not (self.lastPost.locked or self.lastPost.archived))
+        self.btnVoteDn.setChecked(self.lastPost.likes is False)
+        self.btnVoteDn.setEnabled(not (self.lastPost.locked or self.lastPost.archived))
+        self.btnSaved.setChecked(self.lastPost.saved)
+        self.txtBody.setHtml('%s<hr/>%s' % (self.lastPost.title, self.lastPost.selftext_html))
+        self.txtBody.setFocus()
 
     def onFontIncClick(self):
         self.fontsize += 1
