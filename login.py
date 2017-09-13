@@ -9,9 +9,8 @@ class Login(QtGui.QDialog, login_ui.Ui_Dialog):
     def __init__(self, parent):
         QtGui.QDialog.__init__(self, parent)
         self.setupUi(self)
-        self.log = parent.log
-        self.settings = parent.settings
         self.reddit = None
+        self.settings = parent.settings
         self.btnOk.clicked.connect(self.onOkClick)
 
     def showEvent(self, event):
@@ -32,17 +31,14 @@ class Login(QtGui.QDialog, login_ui.Ui_Dialog):
         try:
             reddit = praw.Reddit(client_id=self.cid, client_secret=self.cse, password=self.pwd,
                 user_agent='pysrb4w by /u/esorciccio', username=self.usr)
-            chk = reddit.user.me()
-            self.log.info('Connected as %s' % chk)
             self.settings['cid'] = self.cid
             self.settings['cse'] = self.cse
             self.settings['usr'] = self.usr
             self.reddit = reddit
-            QtGui.QApplication.restoreOverrideCursor()
             self.accept()
         except Exception as err:
-            self.log.error(err.__str__())
             self.lblError.setText(err.__str__())
+        finally:
             QtGui.QApplication.restoreOverrideCursor()
 
     @property

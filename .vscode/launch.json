@@ -6,7 +6,8 @@
             "type": "python",
             "request": "launch",
             "stopOnEntry": false,
-            "pythonPath": "${config:python.pythonPath}",
+            /*"pythonPath": "${config:python.pythonPath}",*/
+            "pythonPath": "c:\\Python27",
             "program": "${workspaceRoot}/pysrb4w.py",
             "cwd": "${workspaceRoot}",
             "debugOptions": [

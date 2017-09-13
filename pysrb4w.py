@@ -19,6 +19,9 @@ except NameError:
     to_unicode = str
 
 
+global log
+log = None
+
 LOG_LEVELS = {
     'D': logging.DEBUG,
     'I': logging.INFO,
@@ -29,37 +32,14 @@ LOG_LEVELS = {
 
 class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
 
-    def __init__(self, loglev):
+    def __init__(self):
         QtGui.QMainWindow.__init__(self, None)
         self.setupUi(self)
-        # log
-        self.log = logging.getLogger('pySRB4W')
-        self.log.setLevel(loglev)
-        fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        rfh = logging.handlers.RotatingFileHandler('pysrb4w.log', maxBytes=5*1024*1024, backupCount=2)
-        rfh.setLevel(self.log.level)
-        rfh.setFormatter(fmt)
-        self.log.addHandler(rfh)
-        con = logging.StreamHandler()
-        con.setLevel(self.log.level)
-        con.setFormatter(fmt)
-        self.log.addHandler(con)
-        # cfg
-        self.cfgfile = os.path.join(os.path.expanduser('~'), '.pysrb4w.json')
-        try:
-            with io.open(self.cfgfile) as data_file:
-                self.settings = json.load(data_file)
-        except Exception as err:
-            self.log.warning(err.__str__())
-            self.settings = json.loads('{ "x":100, "y":100, "w":700, "h":800 }')
-        subs = self.settings.get('subs', [])
-        for s in subs:
-            self.cmbSubs.addItem(s)
-        # init
         self.reddit = None
         self.subreddit = None
         self.lastPost = None
         self.fontsize = 9
+        # events
         self.cmbSubs.currentIndexChanged.connect(self.onChangeSub)
         self.cmbSubs.editTextChanged.connect(self.onChangeSub)
         self.cmbSort.currentIndexChanged.connect(self.onChangeSub)
@@ -71,6 +51,17 @@ class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
         self.btnVoteDn.clicked.connect(self.onVoteDnClick)
         self.btnSaved.clicked.connect(self.onSavedClick)
         self.btnHide.clicked.connect(self.onHideClick)
+        # cfg
+        self.cfgfile = os.path.join(os.path.expanduser('~'), '.pysrb4w.json')
+        try:
+            with io.open(self.cfgfile) as data_file:
+                self.settings = json.load(data_file)
+        except Exception as err:
+            log.warning(err.__str__())
+            self.settings = json.loads('{ "x":100, "y":100, "w":700, "h":800 }')
+        subs = self.settings.get('subs', [])
+        for s in subs:
+            self.cmbSubs.addItem(s)
 
     def closeEvent(self, event):
         event.accept()
@@ -118,19 +109,24 @@ class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
                     self.subreddit = self.reddit.subreddit(sub).new(limit=50)
                 if self.cmbSubs.findText(sub) < 0:
                     self.cmbSubs.addItem(sub)
-            #
             self.lastPost = self.subreddit.next()
             self.btnVoteUp.setChecked(self.lastPost.likes is True)
             self.btnVoteDn.setChecked(self.lastPost.likes is False)
             self.btnSaved.setChecked(self.lastPost.saved)
-            self.txtBody.setHtml('<p><b>%s</b></p>%s' % (self.lastPost.title, self.lastPost.selftext_html))
+            self.txtBody.setHtml('<p><u>%s</u></p>%s' % (self.lastPost.title, self.lastPost.selftext_html))
             self.txtBody.setFocus()
             QtGui.QApplication.restoreOverrideCursor()
-        except Exception as err:
+        except StopIteration:
             QtGui.QApplication.restoreOverrideCursor()
+            QtGui.QMessageBox.critical(self, 'Subreddit empty?', 'Looks like there are no (more) submissions here.')
             self.subreddit = None
-            self.log.error(err.__str__())
+            self.txtBody.clear()
+        except Exception as err:
+            log.error(err)
+            QtGui.QApplication.restoreOverrideCursor()
             QtGui.QMessageBox.critical(self, 'Subreddit error', err.__str__())
+            self.subreddit = None
+            self.txtBody.clear()
 
     def onFontIncClick(self):
         self.fontsize += 1
@@ -159,8 +155,8 @@ class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
             self.btnVoteDn.setChecked(self.lastPost.likes is False)
             QtGui.QApplication.restoreOverrideCursor()
         except Exception as err:
+            log.error(err)
             QtGui.QApplication.restoreOverrideCursor()
-            self.log.error(err.__str__())
             QtGui.QMessageBox.critical(self, 'Subreddit error', err.__str__())
 
     def onVoteDnClick(self):
@@ -178,8 +174,8 @@ class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
             self.btnVoteDn.setChecked(self.lastPost.likes is False)
             QtGui.QApplication.restoreOverrideCursor()
         except Exception as err:
+            log.error(err)
             QtGui.QApplication.restoreOverrideCursor()
-            self.log.error(err.__str__())
             QtGui.QMessageBox.critical(self, 'Subreddit error', err.__str__())
 
     def onSavedClick(self):
@@ -196,8 +192,8 @@ class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
             self.btnSaved.setChecked(self.lastPost.saved)
             QtGui.QApplication.restoreOverrideCursor()
         except Exception as err:
+            log.error(err)
             QtGui.QApplication.restoreOverrideCursor()
-            self.log.error(err.__str__())
             QtGui.QMessageBox.critical(self, 'Subreddit error', err.__str__())
 
     def onHideClick(self):
@@ -208,8 +204,8 @@ class Main(QtGui.QMainWindow, pysrb4w_ui.Ui_MainWindow):
             self.lastPost.hide()
             QtGui.QApplication.restoreOverrideCursor()
         except Exception as err:
+            log.error(err)
             QtGui.QApplication.restoreOverrideCursor()
-            self.log.error(err.__str__())
             QtGui.QMessageBox.critical(self, 'Subreddit error', err.__str__())
             return
         self.onLoadClick()
@@ -228,7 +224,22 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='pySRB4W')
     parser.add_argument('-l', '--log', choices=LOG_LEVELS, default='I', help='Messaggi da mostrare: D=debug, I=info, W=warning, E=errori (default "I")')
     args = parser.parse_args()
-    app = QtGui.QApplication(sys.argv)
-    w = Main(LOG_LEVELS[args.log])
-    w.show()
-    sys.exit(app.exec_())
+    log = logging.getLogger('pySRB4W')
+    log.setLevel(LOG_LEVELS[args.log])
+    fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    rfh = logging.handlers.RotatingFileHandler('pysrb4w.log', maxBytes=5*1024*1024, backupCount=2)
+    rfh.setLevel(log.level)
+    rfh.setFormatter(fmt)
+    log.addHandler(rfh)
+    con = logging.StreamHandler()
+    con.setLevel(log.level)
+    con.setFormatter(fmt)
+    log.addHandler(con)
+    try:
+        app = QtGui.QApplication(sys.argv)
+        w = Main()
+        w.show()
+        sys.exit(app.exec_())
+    except Exception as err:
+        log.critical(err)
+        raise
