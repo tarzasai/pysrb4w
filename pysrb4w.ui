@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>825</width>
     <height>600</height>
    </rect>
   </property>
@@ -24,7 +24,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
-       <number>4</number>
+       <number>8</number>
       </property>
       <property name="leftMargin">
        <number>0</number>
@@ -135,27 +135,14 @@
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Expanding</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
         <property name="spacing">
          <number>0</number>
         </property>
         <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
          <number>0</number>
         </property>
         <item>
@@ -180,7 +167,7 @@
             <normaloff>:/16/res/16/font-inc.png</normaloff>:/16/res/16/font-inc.png</iconset>
           </property>
           <property name="autoRaise">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -206,10 +193,36 @@
             <normaloff>:/16/res/16/font-dec.png</normaloff>:/16/res/16/font-dec.png</iconset>
           </property>
           <property name="autoRaise">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
         <item>
          <widget class="QToolButton" name="btnVoteUp">
           <property name="minimumSize">
@@ -235,7 +248,7 @@
            <bool>true</bool>
           </property>
           <property name="autoRaise">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -267,7 +280,7 @@
            <bool>false</bool>
           </property>
           <property name="autoRaise">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -299,7 +312,7 @@
            <bool>false</bool>
           </property>
           <property name="autoRaise">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -325,7 +338,7 @@
             <normaloff>:/16/res/16/browse.png</normaloff>:/16/res/16/browse.png</iconset>
           </property>
           <property name="autoRaise">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
