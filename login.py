@@ -35,6 +35,8 @@ class Login(QtGui.QDialog, login_ui.Ui_Dialog):
             self.settings['cse'] = self.cse
             self.settings['usr'] = self.usr
             self.reddit = reddit
+            if self.reddit.user.me().name != self.usr:
+                raise Exception("Username doesn't match!") ##: " + self.reddit.user.me().name)
             self.accept()
         except Exception as err:
             self.lblError.setText(err.__str__())
